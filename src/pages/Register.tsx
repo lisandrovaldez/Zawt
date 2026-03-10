@@ -7,30 +7,75 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import Link from '@mui/material/Link'
-import { Link as RouterLink } from 'react-router'
 import { EyeIcon, EyeOffIcon, GoogleIcon } from '../assets/svgs'
 import icon from '../assets/icon.webp'
-import { useLogin } from '../hooks/useLogin'
+import { useRegister } from '../hooks/useRegister'
+import { Link as RouterLink } from 'react-router'
 import { useGoogleLogin } from '../hooks/useGoogleLogin'
 
-export default function Login() {
+export default function Register() {
     const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
     const [focused, setFocused] = useState<string | null>(null)
-    const loginMutation = useLogin()
-    const isLoading = loginMutation.isPending
+    const registerMutation = useRegister()
+    const isLoading = registerMutation.isPending
     const { handleGoogleLogin } = useGoogleLogin()
 
+    const passwordMismatch = confirmPassword.length > 0 && password !== confirmPassword
+
     const handleSubmit = () => {
-        loginMutation.mutate({
-            email,
-            password,
-        })
+        if (passwordMismatch) return
+        registerMutation.mutate({ name, email, password })
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !isLoading) handleSubmit()
+    }
+
+    const fieldSx = (fieldName: string) => ({
+        '& .MuiOutlinedInput-root': {
+            bgcolor: 'rgba(255,255,255,0.03)',
+            borderRadius: '10px',
+            fontFamily: '"DM Sans", sans-serif',
+            fontSize: '14px',
+            color: 'rgba(255,255,255,0.85)',
+            transition: 'all 0.2s',
+            '& fieldset': {
+                borderColor:
+                    focused === fieldName ? 'rgba(99,102,241,0.6)' : 'rgba(255,255,255,0.08)',
+                transition: 'border-color 0.2s',
+            },
+            '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
+            '&.Mui-focused fieldset': {
+                borderColor: 'rgba(99,102,241,0.6)',
+                borderWidth: 1,
+            },
+        },
+        '& input::placeholder': {
+            color: 'rgba(255,255,255,0.2)',
+            opacity: 1,
+        },
+        '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus':
+            {
+                WebkitBoxShadow: '0 0 0 1000px #161616 inset',
+                WebkitTextFillColor: 'rgba(255,255,255,0.85)',
+                caretColor: 'rgba(255,255,255,0.85)',
+                borderRadius: '10px !important',
+                transition: 'background-color 5000s ease-in-out 0s',
+            },
+    })
+
+    const labelSx = {
+        fontSize: '12px',
+        fontWeight: 500,
+        color: 'rgba(255,255,255,0.45)',
+        mb: 0.75,
+        letterSpacing: '0.02em',
+        fontFamily: '"DM Sans", sans-serif',
     }
 
     return (
@@ -68,9 +113,9 @@ export default function Login() {
                     position: 'absolute',
                     inset: 0,
                     backgroundImage: `
-                    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
-                `,
+                        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)
+                    `,
                     backgroundSize: '48px 48px',
                     pointerEvents: 'none',
                 }}
@@ -141,7 +186,7 @@ export default function Login() {
                             fontFamily: '"DM Sans", sans-serif',
                         }}
                     >
-                        Welcome back
+                        Create an account
                     </Typography>
                     <Typography
                         sx={{
@@ -151,7 +196,7 @@ export default function Login() {
                             fontFamily: '"DM Sans", sans-serif',
                         }}
                     >
-                        Sign in to your account
+                        Start tracking your expenses today
                     </Typography>
                 </Box>
 
@@ -204,19 +249,24 @@ export default function Login() {
                     sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
                     onKeyDown={handleKeyDown}
                 >
+                    {/* Name */}
                     <Box>
-                        <Typography
-                            sx={{
-                                fontSize: '12px',
-                                fontWeight: 500,
-                                color: 'rgba(255,255,255,0.45)',
-                                mb: 0.75,
-                                letterSpacing: '0.02em',
-                                fontFamily: '"DM Sans", sans-serif',
-                            }}
-                        >
-                            EMAIL
-                        </Typography>
+                        <Typography sx={labelSx}>NAME</Typography>
+                        <TextField
+                            fullWidth
+                            placeholder="John Doe"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            onFocus={() => setFocused('name')}
+                            onBlur={() => setFocused(null)}
+                            variant="outlined"
+                            sx={fieldSx('name')}
+                        />
+                    </Box>
+
+                    {/* Email */}
+                    <Box>
+                        <Typography sx={labelSx}>EMAIL</Typography>
                         <TextField
                             fullWidth
                             placeholder="you@example.com"
@@ -225,77 +275,13 @@ export default function Login() {
                             onFocus={() => setFocused('email')}
                             onBlur={() => setFocused(null)}
                             variant="outlined"
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    bgcolor: 'rgba(255,255,255,0.03)',
-                                    borderRadius: '10px',
-                                    fontFamily: '"DM Sans", sans-serif',
-                                    fontSize: '14px',
-                                    color: 'rgba(255,255,255,0.85)',
-                                    transition: 'all 0.2s',
-                                    '& fieldset': {
-                                        borderColor:
-                                            focused === 'email'
-                                                ? 'rgba(99,102,241,0.6)'
-                                                : 'rgba(255,255,255,0.08)',
-                                        transition: 'border-color 0.2s',
-                                    },
-                                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: 'rgba(99,102,241,0.6)',
-                                        borderWidth: 1,
-                                    },
-                                },
-                                '& input::placeholder': {
-                                    color: 'rgba(255,255,255,0.2)',
-                                    opacity: 1,
-                                },
-                                '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus':
-                                    {
-                                        WebkitBoxShadow: '0 0 0 1000px #161616 inset',
-                                        WebkitTextFillColor: 'rgba(255,255,255,0.85)',
-                                        caretColor: 'rgba(255,255,255,0.85)',
-                                        borderRadius: '10px !important',
-                                        transition: 'background-color 5000s ease-in-out 0s',
-                                    },
-                            }}
+                            sx={fieldSx('email')}
                         />
                     </Box>
 
+                    {/* Password */}
                     <Box>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                mb: 0.75,
-                            }}
-                        >
-                            <Typography
-                                sx={{
-                                    fontSize: '12px',
-                                    fontWeight: 500,
-                                    color: 'rgba(255,255,255,0.45)',
-                                    letterSpacing: '0.02em',
-                                    fontFamily: '"DM Sans", sans-serif',
-                                }}
-                            >
-                                PASSWORD
-                            </Typography>
-                            <Link
-                                href="#"
-                                underline="none"
-                                sx={{
-                                    fontSize: '12px',
-                                    color: 'rgba(99,102,241,0.8)',
-                                    fontFamily: '"DM Sans", sans-serif',
-                                    '&:hover': { color: '#6366f1' },
-                                    transition: 'color 0.2s',
-                                }}
-                            >
-                                Forgot password?
-                            </Link>
-                        </Box>
+                        <Typography sx={labelSx}>PASSWORD</Typography>
                         <TextField
                             fullWidth
                             placeholder="••••••••"
@@ -323,37 +309,76 @@ export default function Login() {
                                     autoComplete: 'new-password',
                                 },
                             }}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    bgcolor: 'rgba(255,255,255,0.03)',
-                                    borderRadius: '10px',
-                                    fontFamily: '"DM Sans", sans-serif',
-                                    fontSize: '14px',
-                                    color: 'rgba(255,255,255,0.85)',
-                                    '& fieldset': {
-                                        borderColor:
-                                            focused === 'password'
-                                                ? 'rgba(99,102,241,0.6)'
-                                                : 'rgba(255,255,255,0.08)',
-                                        transition: 'border-color 0.2s',
-                                    },
-                                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.15)' },
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: 'rgba(99,102,241,0.6)',
-                                        borderWidth: 1,
-                                    },
-                                },
-                                '& input::placeholder': {
-                                    color: 'rgba(255,255,255,0.2)',
-                                    opacity: 1,
-                                },
-                            }}
+                            sx={fieldSx('password')}
                         />
                     </Box>
 
+                    {/* Confirm Password */}
+                    <Box>
+                        <Typography sx={labelSx}>CONFIRM PASSWORD</Typography>
+                        <TextField
+                            fullWidth
+                            placeholder="••••••••"
+                            type={showConfirmPassword ? 'text' : 'password'}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            onFocus={() => setFocused('confirmPassword')}
+                            onBlur={() => setFocused(null)}
+                            error={passwordMismatch}
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() =>
+                                                    setShowConfirmPassword(!showConfirmPassword)
+                                                }
+                                                edge="end"
+                                                sx={{
+                                                    color: 'rgba(255,255,255,0.25)',
+                                                    '&:hover': { color: 'rgba(255,255,255,0.5)' },
+                                                }}
+                                            >
+                                                {showConfirmPassword ? <EyeOffIcon /> : <EyeIcon />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                    autoComplete: 'new-password',
+                                },
+                            }}
+                            sx={{
+                                ...fieldSx('confirmPassword'),
+                                ...(passwordMismatch && {
+                                    '& .MuiOutlinedInput-root': {
+                                        ...fieldSx('confirmPassword')['& .MuiOutlinedInput-root'],
+                                        '& fieldset': { borderColor: 'rgba(239,68,68,0.6)' },
+                                        '&:hover fieldset': { borderColor: 'rgba(239,68,68,0.8)' },
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: 'rgba(239,68,68,0.6)',
+                                            borderWidth: 1,
+                                        },
+                                    },
+                                }),
+                            }}
+                        />
+                        {passwordMismatch && (
+                            <Typography
+                                sx={{
+                                    fontSize: '12px',
+                                    color: 'rgba(239,68,68,0.8)',
+                                    mt: 0.75,
+                                    fontFamily: '"DM Sans", sans-serif',
+                                }}
+                            >
+                                Passwords don't match
+                            </Typography>
+                        )}
+                    </Box>
+
+                    {/* Submit */}
                     <Button
                         onClick={handleSubmit}
-                        disabled={isLoading}
+                        disabled={isLoading || passwordMismatch}
                         fullWidth
                         variant="contained"
                         sx={{
@@ -374,18 +399,33 @@ export default function Login() {
                                 transform: 'translateY(-1px)',
                             },
                             '&:active': { transform: 'translateY(0)' },
+                            '&.Mui-disabled': {
+                                background: 'rgba(99,102,241,0.2)',
+                                color: 'rgba(255,255,255,0.3)',
+                            },
                         }}
                     >
-                        {isLoading ? 'Signing in...' : 'Sign in'}
+                        {isLoading ? 'Creating account...' : 'Create account'}
                     </Button>
-                    {loginMutation.isError && (
-                        <Typography color="error" variant="body2" sx={{ mt: 1 }}>
-                            Invalid email or password
+
+                    {registerMutation.isError && (
+                        <Typography
+                            sx={{
+                                fontSize: '13px',
+                                color: 'rgba(239,68,68,0.8)',
+                                textAlign: 'center',
+                                fontFamily: '"DM Sans", sans-serif',
+                                mt: 2,
+                            }}
+                        >
+                            {registerMutation.error instanceof Error
+                                ? registerMutation.error.message
+                                : 'Error al crear la cuenta. Intenta nuevamente.'}
                         </Typography>
                     )}
                 </Box>
 
-                {/* Register link */}
+                {/* Login link */}
                 <Typography
                     sx={{
                         mt: 3,
@@ -395,10 +435,10 @@ export default function Login() {
                         fontFamily: '"DM Sans", sans-serif',
                     }}
                 >
-                    Don't have an account?{' '}
+                    Already have an account?{' '}
                     <Link
                         component={RouterLink}
-                        to="/register"
+                        to="/login"
                         underline="none"
                         sx={{
                             color: 'rgba(99,102,241,0.8)',
@@ -407,7 +447,7 @@ export default function Login() {
                             transition: 'color 0.2s',
                         }}
                     >
-                        Create one
+                        Sign in
                     </Link>
                 </Typography>
             </Box>

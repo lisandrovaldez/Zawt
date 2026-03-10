@@ -89,3 +89,19 @@ export type Transaction = {
     date: string
     payment: 'Cash' | 'Bank'
 }
+
+export type UserLogin = {
+    email: string
+    password: string
+}
+
+export type UserRegister = {
+    email: string
+    password: string
+    name: string
+}
+
+export interface AuthResponse {
+    accessToken: string
+    refreshToken: string
+}

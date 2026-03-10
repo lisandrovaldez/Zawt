@@ -27,12 +27,6 @@ const darkTheme = createTheme({
     },
 })
 
-const lightTheme = createTheme({
-    palette: {
-        mode: 'light',
-    },
-})
-
 createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
         <BrowserRouter>

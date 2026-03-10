@@ -9,23 +9,31 @@ import TrendingDownOutlinedIcon from '@mui/icons-material/TrendingDownOutlined'
 import ImportExportOutlinedIcon from '@mui/icons-material/ImportExportOutlined'
 import { useWalletUIStore } from '../store/WalletUIStore'
 import { TransactionModal } from '../components/TransactionModal'
-import { useTransactions } from '../hooks/queries/useTransactions'
-import { useAddTransaction } from '../hooks/mutations/useAddTransaction'
+import { useTransactions } from '../hooks/useTransactions'
+import { useCreateTransaction } from '../hooks/useCreateTransaction'
 
 export default function Home() {
     const { isModalOpen, modalType, openModal, closeModal } = useWalletUIStore()
-    const { data } = useTransactions()
-    const transactions = data?.transactions ?? []
-    const totalIncome = data?.totalIncome ?? 0
-    const totalExpense = data?.totalExpense ?? 0
-    const totalTransactions = data?.totalTransactions ?? 0
-    const net = data?.net ?? 0
-    const addMutation = useAddTransaction(closeModal)
+    const { data: transactions = [] } = useTransactions()
+
+    const totalIncome = transactions
+        .filter((t) => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0)
+
+    const totalExpense = transactions
+        .filter((t) => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0)
+
+    const totalTransactions = transactions.length
+
+    const net = totalIncome - totalExpense
+
+    const addMutation = useCreateTransaction()
 
     return (
         <>
             <Header />
-            <main className="flex px-30 py-12">
+            <main className="flex px-30 py-12 mt-20">
                 <div className="flex flex-col gap-4 mr-20 whitespace-nowrap">
                     <h2 className="text-3xl font-bold">Quick Actions</h2>
                     <ButtonGroup
@@ -50,11 +58,12 @@ export default function Home() {
                     </ButtonGroup>
                 </div>
                 <section className="flex flex-col gap-4 w-full">
-                    <div className="flex gap-3 w-full justify-between">
+                    <div className="flex gap-3 w-full justify-between mb-8">
                         <InfoBox
                             title="Total Transactions"
                             value={totalTransactions}
                             icon={ImportExportOutlinedIcon}
+                            formatted={false}
                         />
 
                         <InfoBox

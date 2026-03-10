@@ -1,3 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap');
 @import 'tailwindcss';
+
+@theme {
+    @keyframes diagonal-rgb {
+        0%,
+        100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    --animate-diagonal-rgb: diagonal-rgb 5s ease infinite;
+}

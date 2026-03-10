@@ -103,6 +103,7 @@ export const TransactionModal = ({ open, handleClose, type, onSave }: Transactio
 
         setForm(initialForm)
         setTouched({})
+        handleClose_()
     }
 
     return (
