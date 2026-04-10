@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { registerRequest } from '../api/auth.api'
 import { useAuthStore } from '../store/AuthStore'
-import { type UserRegister } from '../types'
+import { type UserRegister } from '../types.d'
 import { useNavigate } from 'react-router-dom'
 
 export const useRegister = () => {
