@@ -1,5 +1,5 @@
 import { apiFetch } from './client'
-import { type UserLogin, type UserRegister, type AuthResponse } from '../types'
+import { type UserLogin, type UserRegister, type AuthResponse } from '../types.d'
 
 export const loginRequest = (data: UserLogin) => {
     return apiFetch<AuthResponse>('/auth/login', {
