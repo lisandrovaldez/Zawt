@@ -1,5 +1,5 @@
 import { apiFetch } from './client'
-import { type Transaction } from '../types'
+import { type Transaction } from '../types.d'
 
 export const getTransactions = (accessToken: string) => {
     return apiFetch<Transaction[]>(
