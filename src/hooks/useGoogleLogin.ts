@@ -7,7 +7,7 @@ export const useGoogleLogin = () => {
     const navigate = useNavigate()
 
     const handleGoogleLogin = () => {
-        window.location.href = 'http://localhost:3000/auth/google'
+        window.location.href = 'https://zawt-api.onrender.com/auth/google'
     }
 
     useEffect(() => {
