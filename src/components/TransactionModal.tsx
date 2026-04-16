@@ -124,6 +124,7 @@ export const TransactionModal = ({ open, handleClose, type, onSave }: Transactio
                             required
                             fullWidth
                             label="Short Description"
+                            autoComplete="off"
                             value={form.title}
                             onChange={(e) =>
                                 setForm((prev) => ({ ...prev, title: e.target.value }))
@@ -143,6 +144,7 @@ export const TransactionModal = ({ open, handleClose, type, onSave }: Transactio
                             fullWidth
                             label="Amount"
                             type="number"
+                            autoComplete="off"
                             value={form.amount}
                             onChange={(e) =>
                                 setForm((prev) => ({ ...prev, amount: e.target.value }))

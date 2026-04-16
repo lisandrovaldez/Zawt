@@ -43,7 +43,7 @@ export const TransactionsTable = ({ data, type }: TransactionsTableProps) => {
             </Toolbar>
             <TableContainer
                 sx={{
-                    maxHeight: 183,
+                    maxHeight: 221,
                     '&::-webkit-scrollbar': { width: '8px' },
                     '&::-webkit-scrollbar-thumb': { backgroundColor: '#444', borderRadius: '4px' },
                 }}
